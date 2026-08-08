@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+backend/.env
+
+# Uploads (user content — never commit)
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/uploads/**/*
+!backend/uploads/**/.gitkeep
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

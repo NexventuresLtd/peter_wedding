@@ -1,0 +1,131 @@
+/** UI chrome strings. Wedding copy itself lives in the admin-editable content. */
+export const strings = {
+  en: {
+    // Navigation
+    navHome: 'Home',
+    navProgramme: 'Programme',
+    navGallery: 'Gallery',
+    navShare: 'Share a memory',
+    langLabel: 'Kinyarwanda',
+    langShort: 'RW',
+
+    // Agenda
+    programmeTitle: 'The Programme',
+    programmeSubtitle: 'How our day unfolds',
+    downloadProgramme: 'Print the programme',
+
+    // Gallery
+    viewAll: 'View the full gallery',
+    galleryEmpty: 'No memories have been shared yet — be the first.',
+    galleryClosed: 'The gallery is not open to the public just yet.',
+    photos: 'Photos',
+    videos: 'Videos',
+    messages: 'Messages',
+    filterAll: 'Everything',
+    loadMore: 'Load more',
+    by: 'Shared by',
+    anonymous: 'A guest',
+
+    // Upload
+    uploadPhoto: 'Photo',
+    uploadVideo: 'Video',
+    uploadText: 'Message',
+    chooseFile: 'Choose from your phone',
+    takePhoto: 'Take a photo',
+    recordVideo: 'Record a video',
+    yourName: 'Your name',
+    yourNameOptional: 'Your name (optional)',
+    phone: 'Phone number',
+    phoneOptional: 'Phone number (optional)',
+    phoneRequired: 'Phone number (required)',
+    phoneHelpMedia: 'Only so the couple knows who to thank. Never shown publicly.',
+    phoneHelpText: 'Required for written messages. Never shown publicly.',
+    message: 'Your message',
+    messagePlaceholder: 'Write your wishes for Peter and Yvette…',
+    caption: 'Add a caption (optional)',
+    send: 'Send',
+    sending: 'Sending…',
+    uploadsClosed: 'Uploads are closed. Thank you for celebrating with us!',
+    successTitle: 'Thank you!',
+    successBody:
+      'Your contribution has been received. It will appear in the gallery once the couple has approved it.',
+    sendAnother: 'Share something else',
+    selectFileFirst: 'Please choose a photo or video first.',
+    messageTooShort: 'Please write a message first.',
+    phoneMissing: 'Please enter your phone number.',
+
+    // QR
+    qrTitle: 'Upload from your phone',
+    qrBody: 'Point your camera at this code to open the upload page instantly.',
+    qrOpen: 'Or open the upload page',
+
+    // Generic
+    loading: 'Loading…',
+    retry: 'Try again',
+    close: 'Close',
+    somethingWrong: 'Something went wrong.',
+    poweredBy: 'Powered by',
+  },
+
+  rw: {
+    navHome: 'Ahabanza',
+    navProgramme: 'Gahunda',
+    navGallery: 'Amafoto',
+    navShare: 'Sangiza ikibutso',
+    langLabel: 'English',
+    langShort: 'EN',
+
+    programmeTitle: 'Gahunda y’Umunsi',
+    programmeSubtitle: 'Uko umunsi wacu uzagenda',
+    downloadProgramme: 'Sohora gahunda',
+
+    viewAll: 'Reba amafoto yose',
+    galleryEmpty: 'Nta kibutso kirasangizwa — ba uwa mbere.',
+    galleryClosed: 'Amafoto ntaragezwa ku ruhame.',
+    photos: 'Amafoto',
+    videos: 'Amashusho',
+    messages: 'Ubutumwa',
+    filterAll: 'Byose',
+    loadMore: 'Reba ibindi',
+    by: 'Byatanzwe na',
+    anonymous: 'Umutumirwa',
+
+    uploadPhoto: 'Ifoto',
+    uploadVideo: 'Amashusho',
+    uploadText: 'Ubutumwa',
+    chooseFile: 'Hitamo kuri telefoni yawe',
+    takePhoto: 'Fata ifoto',
+    recordVideo: 'Fata amashusho',
+    yourName: 'Amazina yawe',
+    yourNameOptional: 'Amazina yawe (si ngombwa)',
+    phone: 'Nimero ya telefoni',
+    phoneOptional: 'Nimero ya telefoni (si ngombwa)',
+    phoneRequired: 'Nimero ya telefoni (ngombwa)',
+    phoneHelpMedia:
+      'Ni ukugira ngo abageni bamenye uwo bashimira. Ntabwo igaragara ku ruhame.',
+    phoneHelpText: 'Ni ngombwa ku butumwa bwanditse. Ntabwo igaragara ku ruhame.',
+    message: 'Ubutumwa bwawe',
+    messagePlaceholder: 'Andika ibyifuzo byawe kuri Peter na Yvette…',
+    caption: 'Ongeraho ubusobanuro (si ngombwa)',
+    send: 'Ohereza',
+    sending: 'Kohereza…',
+    uploadsClosed: 'Kohereza byarafunzwe. Murakoze kwizihiza natwe!',
+    successTitle: 'Murakoze!',
+    successBody:
+      'Ibyo watanze byakiriwe. Bizagaragara mu mafoto abageni nibemeza.',
+    sendAnother: 'Sangiza ikindi',
+    selectFileFirst: 'Banza uhitemo ifoto cyangwa amashusho.',
+    messageTooShort: 'Banza wandike ubutumwa.',
+    phoneMissing: 'Andika nimero ya telefoni yawe.',
+
+    qrTitle: 'Ohereza ukoresheje telefoni',
+    qrBody: 'Erekeza kamera kuri iyi kode ufungure urupapuro rwo kohereza.',
+    qrOpen: 'Cyangwa fungura urupapuro rwo kohereza',
+
+    loading: 'Birimo gutegurwa…',
+    retry: 'Ongera ugerageze',
+    close: 'Funga',
+    somethingWrong: 'Hari ikitagenze neza.',
+    poweredBy: 'Byatewe inkunga na',
+  },
+} as const

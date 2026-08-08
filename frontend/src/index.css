@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fallbacks only — SiteContext overwrites these from the admin theme on load,
+   so the first paint is never unstyled.
+
+   Colours are space-separated RGB channels, not hex, so Tailwind's opacity
+   modifiers (bg-primary/10) can compose against them. */
+:root {
+  --c-primary: 15 76 58;
+  --c-primary-dark: 10 52 40;
+  --c-accent: 201 162 39;
+  --c-accent-soft: 232 217 168;
+  --c-background: 253 251 247;
+  --c-surface: 255 255 255;
+  --c-surface-alt: 246 241 231;
+  --c-ink: 26 26 26;
+  --c-ink-muted: 107 100 89;
+  --c-border: 231 223 209;
+  --c-success: 46 125 91;
+  --c-danger: 179 38 30;
+  --c-on-primary: 253 251 247;
+  --c-on-accent: 26 26 26;
+
+  --f-heading: 'Cormorant Garamond', 'Times New Roman', serif;
+  --f-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --f-script: 'Great Vibes', cursive;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+}
+
+@layer base {
+  * {
+    @apply border-hairline;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-body antialiased;
+    /* Safe-area padding so the phone upload page clears the notch. */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+
+  /* Visible focus for keyboard users, invisible for mouse users. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2;
+    --tw-ring-offset-color: rgb(var(--c-background));
+  }
+
+  ::selection {
+    background: rgb(var(--c-accent-soft));
+    color: rgb(var(--c-ink));
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+           text-sm font-semibold transition-all duration-200
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-on-primary hover:bg-primary-dark
+           hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98];
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-on-accent hover:brightness-105
+           hover:shadow-lg hover:shadow-accent/25 active:scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply btn border border-primary/30 bg-transparent text-primary
+           hover:border-primary hover:bg-primary/5 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn px-4 py-2 text-ink-muted hover:bg-ink/5 hover:text-ink;
+  }
+
+  .btn-danger {
+    @apply btn bg-danger text-white hover:brightness-110 active:scale-[0.98];
+  }
+
+  .card {
+    @apply rounded-lg border border-hairline bg-surface shadow-sm;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+
+  .field-input {
+    @apply w-full rounded-md border border-hairline bg-surface px-4 py-3
+           text-base text-ink placeholder:text-ink-muted/60
+           transition-colors focus:border-accent focus:outline-none
+           focus:ring-2 focus:ring-accent/25;
+  }
+
+  .field-hint {
+    @apply mt-1.5 text-xs text-ink-muted;
+  }
+
+  /* Thin gold rule with a diamond in the middle — used under section titles. */
+  .divider-ornament {
+    @apply flex items-center justify-center gap-3 text-accent;
+  }
+
+  .divider-ornament::before,
+  .divider-ornament::after {
+    content: '';
+    @apply h-px w-16 bg-gradient-to-r from-transparent via-accent to-transparent sm:w-24;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.22em] text-accent;
+  }
+
+  .skeleton {
+    @apply rounded-md bg-surface-alt;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.65) 50%,
+      transparent 100%
+    );
+    background-size: 800px 100%;
+    @apply animate-shimmer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

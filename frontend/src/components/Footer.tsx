@@ -24,7 +24,7 @@ export function Footer() {
 
         {config?.content.qrPlacement === 'footer' && (
           <div className="mt-9 flex flex-col items-center">
-            <QrCard size="sm" showUrl={false} />
+            <QrCard size="sm" onDark showUrl={false} />
             <p className="mt-3 max-w-xs text-xs leading-relaxed text-on-primary/70">
               {copy?.uploadSubtitle ?? t('qrBody')}
             </p>

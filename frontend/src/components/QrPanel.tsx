@@ -49,7 +49,7 @@ export function QrPanel() {
         </div>
 
         <div className="flex justify-center">
-          <QrCard size="lg" />
+          <QrCard size="lg" onDark />
         </div>
       </div>
     </section>

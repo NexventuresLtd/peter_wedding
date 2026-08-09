@@ -141,7 +141,7 @@ export function Hero() {
             className="mt-12 flex animate-fade-up flex-col items-center"
             style={{ animationDelay: '480ms' }}
           >
-            <QrCard size="sm" showUrl={false} />
+            <QrCard size="sm" onDark showUrl={false} />
             <p className="mt-3 max-w-xs text-xs leading-relaxed text-hero-text/80">
               {copy?.uploadSubtitle ?? t('qrBody')}
             </p>

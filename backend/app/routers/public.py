@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import io
+import re
 
 import qrcode
+from PIL import Image, ImageOps
 from fastapi import APIRouter, Depends, Query, Request, Response
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
@@ -128,16 +130,33 @@ def public_base_url(request: Request) -> str:
     return f"{scheme}://{host}".rstrip("/")
 
 
+HEX_COLOUR = re.compile(r"^#?([0-9a-fA-F]{6})$")
+
+
+def _parse_hex(value: str, fallback: tuple[int, int, int]) -> tuple[int, int, int]:
+    match = HEX_COLOUR.match(value.strip())
+    if not match:
+        return fallback
+    digits = match.group(1)
+    return tuple(int(digits[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore[return-value]
+
+
 @router.get("/qr", response_class=Response)
 def upload_qr_code(
     request: Request,
     target: str = Query(default="/upload", description="Path on the public site"),
     scale: int = Query(default=12, ge=4, le=40),
+    fg: str = Query(default="#0F4C3A", description="Module colour, hex"),
+    bg: str = Query(
+        default="transparent",
+        description="Background: 'transparent' or a hex colour",
+    ),
 ) -> Response:
     """PNG QR code pointing guests at the upload page.
 
     Rendered server-side so the printed card and the on-screen code are always
-    the same image.
+    the same image. The background is transparent by default so the code can
+    sit directly on the hero photo or a coloured band without a white plate.
     """
     url = f"{public_base_url(request)}/{target.lstrip('/')}"
 
@@ -150,12 +169,31 @@ def upload_qr_code(
     qr.add_data(url)
     qr.make(fit=True)
 
-    image = qr.make_image(
+    # Draw black-on-white first, then recolour. Deriving alpha from the
+    # greyscale keeps the rounded modules' anti-aliased edges smooth instead of
+    # producing the hard, speckled edge that keying out white would give.
+    rendered = qr.make_image(
         image_factory=StyledPilImage,
         module_drawer=RoundedModuleDrawer(),
-        fill_color="#0F4C3A",
+        fill_color="black",
         back_color="white",
     )
+    mask = rendered.get_image().convert("L")
+
+    foreground = _parse_hex(fg, (15, 76, 58))
+    transparent = bg.strip().lower() in {"transparent", "none", ""}
+
+    if transparent:
+        # Ink where the mask is dark, clear where it is light.
+        image = Image.new("RGBA", mask.size, (*foreground, 0))
+        image.putalpha(ImageOps.invert(mask))
+    else:
+        background = _parse_hex(bg, (255, 255, 255))
+        image = Image.composite(
+            Image.new("RGB", mask.size, foreground),
+            Image.new("RGB", mask.size, background),
+            ImageOps.invert(mask),
+        ).convert("RGBA")
 
     buffer = io.BytesIO()
     image.save(buffer, format="PNG")

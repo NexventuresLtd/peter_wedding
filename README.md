@@ -15,7 +15,7 @@ and an admin approves each item before it appears publicly.
 ### 1. Database
 
 ```bash
-createdb peterwedding          # or: psql -U postgres -c "CREATE DATABASE peterwedding;"
+python -m app.seed   # creates the database, tables, admin, theme and agenda
 ```
 
 ### 2. Backend

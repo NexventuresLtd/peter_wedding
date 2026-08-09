@@ -6,14 +6,12 @@ import { classNames, timeAgo } from '../lib/format'
 import type { GalleryItem, UploadKind } from '../lib/types'
 import {
   CameraIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   HeartIcon,
   MessageIcon,
   PlayIcon,
   VideoIcon,
-  XIcon,
 } from './icons'
+import { Lightbox } from './Lightbox'
 import { EmptyState, ErrorState, Skeleton, Spinner } from './ui'
 
 const PER_PAGE = 24
@@ -228,131 +226,6 @@ function GalleryTile({
         </span>
       )}
     </button>
-  )
-}
-
-function Lightbox({
-  items,
-  index,
-  onClose,
-  onNavigate,
-}: {
-  items: GalleryItem[]
-  index: number
-  onClose: () => void
-  onNavigate: (index: number) => void
-}) {
-  const { t, lang } = useLang()
-  const item = items[index]
-
-  const go = useCallback(
-    (delta: number) => {
-      const next = (index + delta + items.length) % items.length
-      onNavigate(next)
-    },
-    [index, items.length, onNavigate],
-  )
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-      if (event.key === 'ArrowRight') go(1)
-      if (event.key === 'ArrowLeft') go(-1)
-    }
-    document.addEventListener('keydown', onKey)
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = previous
-    }
-  }, [go, onClose])
-
-  if (!item) return null
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col bg-black/94 animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div className="flex items-center justify-between px-5 py-4 text-white/80">
-        <span className="text-sm tabular-nums">
-          {index + 1} / {items.length}
-        </span>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-pill p-2 transition-colors hover:bg-white/10 hover:text-white"
-          aria-label={t('close')}
-        >
-          <XIcon className="h-6 w-6" />
-        </button>
-      </div>
-
-      <div
-        className="flex flex-1 items-center justify-center overflow-hidden px-4 pb-4"
-        onClick={(event) => event.stopPropagation()}
-      >
-        {items.length > 1 && (
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            className="absolute left-2 z-10 rounded-pill p-3 text-white/70 transition-colors hover:bg-white/10 hover:text-white sm:left-6"
-            aria-label="Previous"
-          >
-            <ChevronLeftIcon className="h-7 w-7" />
-          </button>
-        )}
-
-        {item.kind === 'photo' && (
-          <img
-            src={assetUrl(item.file_url)}
-            alt={item.message ?? ''}
-            className="max-h-full max-w-full rounded-md object-contain"
-          />
-        )}
-        {item.kind === 'video' && (
-          <video
-            src={assetUrl(item.file_url) || undefined}
-            className="max-h-full max-w-full rounded-md"
-            controls
-            autoPlay
-            playsInline
-          />
-        )}
-        {item.kind === 'text' && (
-          <blockquote className="max-w-2xl px-6 text-center">
-            <MessageIcon className="mx-auto mb-6 h-9 w-9 text-accent" />
-            <p className="font-heading text-2xl leading-relaxed text-white sm:text-3xl">
-              “{item.message}”
-            </p>
-          </blockquote>
-        )}
-
-        {items.length > 1 && (
-          <button
-            type="button"
-            onClick={() => go(1)}
-            className="absolute right-2 z-10 rounded-pill p-3 text-white/70 transition-colors hover:bg-white/10 hover:text-white sm:right-6"
-            aria-label="Next"
-          >
-            <ChevronRightIcon className="h-7 w-7" />
-          </button>
-        )}
-      </div>
-
-      <div className="px-6 pb-8 text-center" onClick={(e) => e.stopPropagation()}>
-        {item.kind !== 'text' && item.message && (
-          <p className="mx-auto mb-2 max-w-xl text-sm text-white/90">{item.message}</p>
-        )}
-        <p className="text-xs text-white/50">
-          {item.uploader_name ? `${t('by')} ${item.uploader_name} · ` : ''}
-          {timeAgo(item.created_at, lang)}
-        </p>
-      </div>
-    </div>
   )
 }
 

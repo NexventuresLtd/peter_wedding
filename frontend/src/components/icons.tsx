@@ -180,6 +180,36 @@ export const ListIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const DownloadIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5" />
+    <path d="M4 17.5V19a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 19v-1.5" />
+  </Icon>
+)
+
+export const ShareIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="18" cy="5.5" r="2.5" />
+    <circle cx="6" cy="12" r="2.5" />
+    <circle cx="18" cy="18.5" r="2.5" />
+    <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+  </Icon>
+)
+
+export const ExpandIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9" />
+    <path d="M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15" />
+  </Icon>
+)
+
+export const CollapseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 4v3.5A1.5 1.5 0 0 1 7.5 9H4M20 9h-3.5A1.5 1.5 0 0 1 15 7.5V4" />
+    <path d="M15 20v-3.5a1.5 1.5 0 0 1 1.5-1.5H20M4 15h3.5A1.5 1.5 0 0 1 9 16.5V20" />
+  </Icon>
+)
+
 export const LogoutIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M15 4.5h3A2.5 2.5 0 0 1 20.5 7v10a2.5 2.5 0 0 1-2.5 2.5h-3" />

@@ -15,7 +15,7 @@ from ..storage import delete_media, save_media
 
 router = APIRouter(prefix="/admin/site", tags=["admin:site"])
 
-ALLOWED_SLOTS = {"hero", "couple", "gallery", "story", "invitation"}
+ALLOWED_SLOTS = {"logo", "hero", "couple", "gallery", "story", "invitation"}
 
 
 @router.get("", response_model=SiteConfig)

@@ -8,6 +8,12 @@ import type { SiteImage } from '../../lib/types'
 
 const SLOTS: { key: string; label: string; hint: string }[] = [
   {
+    key: 'logo',
+    hint:
+      'Wordmark in the navigation bar. A transparent PNG or SVG works best — it sits on the photo at the top of the page and on a light bar once scrolled. Overrides the logo text.',
+    label: 'Site logo',
+  },
+  {
     key: 'hero',
     label: 'Hero background',
     hint: 'The full-screen photo behind the names. Landscape works best. Only the first active image is used.',

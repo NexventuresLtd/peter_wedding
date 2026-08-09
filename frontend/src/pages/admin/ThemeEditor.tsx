@@ -4,7 +4,7 @@ import { Spinner, useToast } from '../../components/ui'
 import { useSite } from '../../context/SiteContext'
 import { api } from '../../lib/api'
 import { classNames } from '../../lib/format'
-import type { SiteConfig, Theme, ThemeColors } from '../../lib/types'
+import type { QrPlacement, SiteConfig, Theme, ThemeColors } from '../../lib/types'
 
 const COLOR_FIELDS: { key: keyof ThemeColors; label: string; hint: string }[] = [
   { key: 'primary', label: 'Primary', hint: 'Headings, buttons, footer' },
@@ -19,6 +19,13 @@ const COLOR_FIELDS: { key: keyof ThemeColors; label: string; hint: string }[] = 
   { key: 'border', label: 'Borders', hint: 'Hairlines' },
   { key: 'onPrimary', label: 'Text on primary', hint: 'Must contrast primary' },
   { key: 'onAccent', label: 'Text on accent', hint: 'Must contrast accent' },
+]
+
+/** Hero text sits on a photo, so it is themed on its own. */
+const HERO_FIELDS: { key: keyof ThemeColors; label: string; hint: string }[] = [
+  { key: 'heroTitle', label: 'Names', hint: 'The big script names, and the date' },
+  { key: 'heroKicker', label: 'Accents', hint: 'Kicker, ampersand, countdown, frame' },
+  { key: 'heroText', label: 'Body text', hint: 'Tagline, venue, buttons' },
 ]
 
 /** Ready-made palettes so the couple can re-skin the site in one click. */
@@ -91,6 +98,13 @@ const PRESETS: { name: string; colors: Partial<ThemeColors> }[] = [
       onAccent: '#26190F',
     },
   },
+]
+
+const QR_PLACEMENTS: { key: QrPlacement; label: string; hint: string }[] = [
+  { key: 'section', label: 'Own section', hint: 'A full-width band above the footer. The most prominent.' },
+  { key: 'hero', label: 'In the hero', hint: 'Under the buttons on the opening screen. Seen first.' },
+  { key: 'footer', label: 'In the footer', hint: 'Discreet, at the very bottom of every page.' },
+  { key: 'hidden', label: 'Hidden', hint: 'No code on the site. The /upload page still works.' },
 ]
 
 export function ThemeEditor() {
@@ -278,6 +292,59 @@ export function ThemeEditor() {
           </section>
 
           <section className="card p-6">
+            <h2 className="mb-1 font-heading text-lg text-primary">Hero text</h2>
+            <p className="mb-5 text-sm text-ink-muted">
+              These only affect the hero. Because the text sits over a photo it
+              needs its own colours — changing the page palette leaves it alone.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {HERO_FIELDS.map((field) => (
+                <div key={field.key} className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={draft.colors[field.key] ?? '#ffffff'}
+                    onChange={(event) => setColor(field.key, event.target.value)}
+                    className="h-11 w-11 shrink-0 cursor-pointer rounded-sm border border-hairline bg-transparent p-0.5"
+                    aria-label={field.label}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-ink">{field.label}</p>
+                    <input
+                      type="text"
+                      value={draft.colors[field.key] ?? ''}
+                      onChange={(event) => setColor(field.key, event.target.value)}
+                      className="w-full bg-transparent font-mono text-xs uppercase text-ink-muted focus:outline-none"
+                    />
+                    <p className="truncate text-[11px] text-ink-muted/70">{field.hint}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Preview against a dark ground, roughly as the hero renders. */}
+            <div
+              className="mt-5 rounded-md p-6 text-center"
+              style={{ background: 'linear-gradient(160deg,#123,#061c15)' }}
+            >
+              <p
+                className="text-[11px] font-semibold uppercase tracking-[0.3em]"
+                style={{ color: draft.colors.heroKicker }}
+              >
+                We are getting married
+              </p>
+              <p
+                className="mt-2 font-script text-4xl"
+                style={{ color: draft.colors.heroTitle }}
+              >
+                Peter <span style={{ color: draft.colors.heroKicker }}>&amp;</span> Yvette
+              </p>
+              <p className="mt-2 text-sm" style={{ color: draft.colors.heroText }}>
+                Join us as we celebrate the beginning of our forever.
+              </p>
+            </div>
+          </section>
+
+          <section className="card p-6">
             <h2 className="mb-4 font-heading text-lg text-primary">Hero overlay</h2>
             <p className="mb-4 text-sm text-ink-muted">
               How much the hero photo is darkened so the names stay legible.
@@ -352,6 +419,20 @@ function ContentEditor({
             onChange={(v) => set({ hashtag: v })}
           />
           <div>
+            <label className="field-label">Logo text</label>
+            <input
+              type="text"
+              value={content.logoText}
+              onChange={(event) => set({ logoText: event.target.value })}
+              placeholder="P & Y"
+              className="field-input"
+            />
+            <p className="field-hint">
+              Shown in the navigation bar. Leave blank for the couple's initials.
+              An uploaded logo image replaces it.
+            </p>
+          </div>
+          <div>
             <label className="field-label">Wedding date</label>
             <input
               type="date"
@@ -361,6 +442,31 @@ function ContentEditor({
             />
             <p className="field-hint">Drives the date line and the countdown.</p>
           </div>
+        </div>
+      </section>
+
+      <section className="card p-6">
+        <h2 className="mb-1 font-heading text-lg text-primary">Upload QR code</h2>
+        <p className="mb-5 text-sm text-ink-muted">
+          Where the scannable code appears for guests on the home page.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {QR_PLACEMENTS.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => set({ qrPlacement: option.key })}
+              className={classNames(
+                'rounded-md border p-4 text-left transition-all hover:shadow-md',
+                content.qrPlacement === option.key
+                  ? 'border-accent bg-accent/[0.06] ring-2 ring-accent/30'
+                  : 'border-hairline',
+              )}
+            >
+              <p className="text-sm font-medium text-ink">{option.label}</p>
+              <p className="mt-1 text-xs leading-relaxed text-ink-muted">{option.hint}</p>
+            </button>
+          ))}
         </div>
       </section>
 

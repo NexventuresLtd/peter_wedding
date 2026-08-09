@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     first_admin_password: str = "ChangeMe123!"
     first_admin_name: str = "Wedding Admin"
 
-    public_site_url: str = "http://localhost:5173"
+    # Blank means "derive from the incoming request" — see public_base_url().
+    public_site_url: str = ""
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Path every endpoint and the media mount live under. Set this to whatever

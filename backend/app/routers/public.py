@@ -5,7 +5,7 @@ from __future__ import annotations
 import io
 
 import qrcode
-from fastapi import APIRouter, Depends, Query, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 from sqlalchemy import func
@@ -107,17 +107,39 @@ def read_gallery_stats(db: Session = Depends(get_db)) -> dict:
     }
 
 
+def public_base_url(request: Request) -> str:
+    """Origin the QR code should point at.
+
+    PUBLIC_SITE_URL wins when set. Otherwise it is derived from the incoming
+    request, honouring the proxy's forwarded headers — so a deployed site
+    encodes its own domain even if nobody remembered to set the variable, and
+    a code printed from staging never sends guests to localhost.
+    """
+    configured = settings.public_site_url.strip()
+    if configured:
+        return configured.rstrip("/")
+
+    scheme = request.headers.get("x-forwarded-proto", request.url.scheme)
+    host = (
+        request.headers.get("x-forwarded-host")
+        or request.headers.get("host")
+        or request.url.netloc
+    )
+    return f"{scheme}://{host}".rstrip("/")
+
+
 @router.get("/qr", response_class=Response)
 def upload_qr_code(
+    request: Request,
     target: str = Query(default="/upload", description="Path on the public site"),
     scale: int = Query(default=12, ge=4, le=40),
 ) -> Response:
     """PNG QR code pointing guests at the upload page.
 
     Rendered server-side so the printed card and the on-screen code are always
-    the same image, and so the target follows PUBLIC_SITE_URL per environment.
+    the same image.
     """
-    url = f"{settings.public_site_url.rstrip('/')}/{target.lstrip('/')}"
+    url = f"{public_base_url(request)}/{target.lstrip('/')}"
 
     qr = qrcode.QRCode(
         version=None,
@@ -148,6 +170,6 @@ def upload_qr_code(
 
 
 @router.get("/qr/target")
-def qr_target(target: str = Query(default="/upload")) -> dict:
+def qr_target(request: Request, target: str = Query(default="/upload")) -> dict:
     """The URL encoded in the QR code, for display next to it."""
-    return {"url": f"{settings.public_site_url.rstrip('/')}/{target.lstrip('/')}"}
+    return {"url": f"{public_base_url(request)}/{target.lstrip('/')}"}

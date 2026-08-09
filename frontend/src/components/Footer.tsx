@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { useLang } from '../context/LangContext'
 import { useSite } from '../context/SiteContext'
+import { QrCard } from './QrCode'
 import { Ornament } from './ui'
 
 export function Footer() {
@@ -20,6 +21,15 @@ export function Footer() {
         </p>
 
         <Ornament className="mt-6 opacity-70" />
+
+        {config?.content.qrPlacement === 'footer' && (
+          <div className="mt-9 flex flex-col items-center">
+            <QrCard size="sm" showUrl={false} />
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-on-primary/70">
+              {copy?.uploadSubtitle ?? t('qrBody')}
+            </p>
+          </div>
+        )}
 
         {copy?.thankYou && (
           <p className="mx-auto mt-6 max-w-lg text-sm leading-relaxed text-on-primary/75">

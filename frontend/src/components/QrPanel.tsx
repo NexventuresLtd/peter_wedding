@@ -1,27 +1,27 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useLang } from '../context/LangContext'
 import { useSite } from '../context/SiteContext'
-import { api, assetUrl } from '../lib/api'
-import { CameraIcon, QrIcon } from './icons'
+import { CameraIcon } from './icons'
+import { QrCard } from './QrCode'
 import { Ornament } from './ui'
 
+/**
+ * The full-width QR section. Rendered only when the couple has chosen
+ * "own section" as the QR placement — otherwise the code appears in the hero
+ * or the footer instead.
+ */
 export function QrPanel() {
   const { t, lang } = useLang()
   const { config } = useSite()
-  const [target, setTarget] = useState<string | null>(null)
 
-  useEffect(() => {
-    // The code image itself still renders if this fails — only the printed
-    // URL beneath it goes missing.
-    api.qrTarget().then(({ url }) => setTarget(url)).catch(() => setTarget(null))
-  }, [])
+  const placement = config?.content.qrPlacement ?? 'section'
+  if (placement !== 'section') return null
 
   const copy = config?.content[lang]
 
   return (
-    <section className="relative overflow-hidden bg-primary py-20 text-on-primary sm:py-28">
+    <section id="share" className="relative scroll-mt-20 overflow-hidden bg-primary py-20 text-on-primary sm:py-28">
       {/* Soft gold bloom behind the card. */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 h-[38rem] w-[38rem] -translate-x-1/2 -translate-y-1/2 rounded-pill opacity-20 blur-3xl"
@@ -46,28 +46,10 @@ export function QrPanel() {
               {t('navShare')}
             </Link>
           </div>
-
-          {target && (
-            <p className="mt-6 break-all text-xs text-on-primary/50">
-              {t('qrOpen')}: <span className="text-accent">{target}</span>
-            </p>
-          )}
         </div>
 
         <div className="flex justify-center">
-          <figure className="rounded-lg bg-white p-5 shadow-2xl sm:p-7">
-            <img
-              src={assetUrl('/qr?scale=12')}
-              alt={t('qrTitle')}
-              width={280}
-              height={280}
-              className="h-56 w-56 sm:h-72 sm:w-72"
-            />
-            <figcaption className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <QrIcon className="h-4 w-4" />
-              {t('qrTitle')}
-            </figcaption>
-          </figure>
+          <QrCard size="lg" />
         </div>
       </div>
     </section>

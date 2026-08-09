@@ -22,6 +22,9 @@
   --c-danger: 179 38 30;
   --c-on-primary: 253 251 247;
   --c-on-accent: 26 26 26;
+  --c-hero-title: 255 255 255;
+  --c-hero-kicker: 201 162 39;
+  --c-hero-text: 244 241 234;
 
   --f-heading: 'Cormorant Garamond', 'Times New Roman', serif;
   --f-body: 'Inter', system-ui, -apple-system, sans-serif;

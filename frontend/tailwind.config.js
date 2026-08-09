@@ -24,6 +24,10 @@ export default {
         danger: 'rgb(var(--c-danger) / <alpha-value>)',
         'on-primary': 'rgb(var(--c-on-primary) / <alpha-value>)',
         'on-accent': 'rgb(var(--c-on-accent) / <alpha-value>)',
+        // Hero text sits on a photo, so it is themed independently.
+        'hero-title': 'rgb(var(--c-hero-title) / <alpha-value>)',
+        'hero-kicker': 'rgb(var(--c-hero-kicker) / <alpha-value>)',
+        'hero-text': 'rgb(var(--c-hero-text) / <alpha-value>)',
       },
       fontFamily: {
         heading: 'var(--f-heading)',
@@ -49,11 +53,28 @@ export default {
           '0%': { backgroundPosition: '-800px 0' },
           '100%': { backgroundPosition: '800px 0' },
         },
+        // Lightbox slide transitions — the new image enters from the side the
+        // viewer is travelling towards.
+        'slide-in-right': {
+          '0%': { opacity: '0', transform: 'translateX(6%) scale(0.97)' },
+          '100%': { opacity: '1', transform: 'translateX(0) scale(1)' },
+        },
+        'slide-in-left': {
+          '0%': { opacity: '0', transform: 'translateX(-6%) scale(0.97)' },
+          '100%': { opacity: '1', transform: 'translateX(0) scale(1)' },
+        },
+        'zoom-in': {
+          '0%': { opacity: '0', transform: 'scale(0.94)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
         'fade-in': 'fade-in 0.5s ease both',
         shimmer: 'shimmer 1.6s linear infinite',
+        'slide-in-right': 'slide-in-right 0.32s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'slide-in-left': 'slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'zoom-in': 'zoom-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
       },
     },
   },

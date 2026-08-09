@@ -22,6 +22,11 @@ DEFAULT_THEME: dict = {
         "danger": "#B3261E",
         "onPrimary": "#FDFBF7",
         "onAccent": "#1A1A1A",
+        # Hero text is themed separately: it sits on a photo, not on the page
+        # background, so it needs to stay legible independently of the palette.
+        "heroTitle": "#FFFFFF",
+        "heroKicker": "#C9A227",
+        "heroText": "#F4F1EA",
     },
     "fonts": {
         "heading": "'Cormorant Garamond', 'Times New Roman', serif",
@@ -36,6 +41,9 @@ DEFAULT_CONTENT: dict = {
     "brideName": "Yvette",
     "groomName": "Peter",
     "hashtag": "#PeterAndYvette",
+    # Wordmark in the navigation bar. Blank falls back to the couple's
+    # initials; an uploaded "logo" image wins over both.
+    "logoText": "",
     "weddingDate": "",  # e.g. "2026-09-12" — set this in the admin console
     "en": {
         "heroKicker": "We are getting married",
@@ -81,6 +89,8 @@ DEFAULT_CONTENT: dict = {
         ),
         "thankYou": "Murakoze kwizihiza natwe.",
     },
+    # Where the upload QR code appears: "hero" | "section" | "footer" | "hidden".
+    "qrPlacement": "section",
     "flags": {
         "uploadsOpen": True,
         "galleryPublic": True,

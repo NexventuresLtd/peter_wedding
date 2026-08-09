@@ -75,7 +75,7 @@ export function Home() {
       <Agenda />
 
       {/* Gallery teaser */}
-      <section className="py-20 sm:py-28">
+      <section id="gallery-teaser" className="scroll-mt-20 py-20 sm:py-28">
         <div className="container-page">
           <SectionHeading
             eyebrow={config?.content.hashtag}

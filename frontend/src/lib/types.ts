@@ -4,6 +4,7 @@ export type UploadKind = 'photo' | 'video' | 'text'
 export type UploadStatus = 'pending' | 'approved' | 'rejected'
 export type AdminRole = 'superadmin' | 'admin' | 'moderator'
 export type AgendaSectionKey = 'ceremony' | 'reception' | 'afterparty'
+export type QrPlacement = 'hero' | 'section' | 'footer' | 'hidden'
 
 /** A bullet is either plain text or a heading with nested children. */
 export type Bullet = string | { text: string; children?: string[] }
@@ -37,6 +38,9 @@ export interface ThemeColors {
   danger: string
   onPrimary: string
   onAccent: string
+  heroTitle: string
+  heroKicker: string
+  heroText: string
 }
 
 export interface Theme {
@@ -64,7 +68,9 @@ export interface SiteContent {
   brideName: string
   groomName: string
   hashtag: string
+  logoText: string
   weddingDate: string
+  qrPlacement: QrPlacement
   en: LocalisedCopy
   rw: LocalisedCopy
   flags: {

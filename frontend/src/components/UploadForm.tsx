@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 
 import { useLang } from '../context/LangContext'
-import { api, ApiError } from '../lib/api'
+import { api, API_BASE, ApiError } from '../lib/api'
 import { classNames, formatBytes } from '../lib/format'
 import type { UploadKind } from '../lib/types'
 import { CameraIcon, CheckIcon, MessageIcon, UploadIcon, VideoIcon, XIcon } from './icons'
@@ -370,7 +370,7 @@ function uploadWithProgress(
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', '/api/uploads/media')
+    xhr.open('POST', `${API_BASE}/api/uploads/media`)
 
     xhr.upload.addEventListener('progress', (event) => {
       if (event.lengthComputable) {

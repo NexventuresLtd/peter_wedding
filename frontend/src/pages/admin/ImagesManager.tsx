@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ImageIcon, TrashIcon, UploadIcon } from '../../components/icons'
 import { Badge, EmptyState, Modal, Spinner, useToast } from '../../components/ui'
 import { useSite } from '../../context/SiteContext'
-import { api } from '../../lib/api'
+import { api, assetUrl } from '../../lib/api'
 import type { SiteImage } from '../../lib/types'
 
 const SLOTS: { key: string; label: string; hint: string }[] = [
@@ -239,7 +239,7 @@ function ImageCard({
     <article className="overflow-hidden rounded-md border border-hairline">
       <div className="relative">
         <img
-          src={image.thumb_url ?? image.file_url}
+          src={assetUrl(image.thumb_url ?? image.file_url)}
           alt=""
           loading="lazy"
           className="h-40 w-full bg-surface-alt object-cover"

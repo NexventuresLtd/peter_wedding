@@ -7,6 +7,7 @@ import { QrPanel } from '../components/QrPanel'
 import { SectionHeading } from '../components/ui'
 import { useLang } from '../context/LangContext'
 import { useSite } from '../context/SiteContext'
+import { assetUrl } from '../lib/api'
 
 export function Home() {
   const { lang, t } = useLang()
@@ -53,7 +54,7 @@ export function Home() {
             {coupleImage && (
               <figure className="relative">
                 <img
-                  src={coupleImage.file_url}
+                  src={assetUrl(coupleImage.file_url)}
                   alt={
                     (lang === 'rw' ? coupleImage.caption_rw : coupleImage.caption_en) ?? ''
                   }

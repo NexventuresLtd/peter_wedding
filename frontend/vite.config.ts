@@ -1,19 +1,23 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// The API and uploaded media are proxied in development so the browser sees a
-// single origin — no CORS surprises, and `/media/...` URLs from the API work
-// verbatim in both dev and production.
-const API_TARGET = process.env.VITE_API_TARGET ?? 'http://127.0.0.1:8000'
+export default defineConfig(({ mode }) => {
+  // loadEnv (not process.env) is what actually reads frontend/.env files.
+  const env = loadEnv(mode, process.cwd(), '')
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true, // expose on the LAN so phones can reach the QR upload page
-    port: 5173,
-    proxy: {
-      '/api': { target: API_TARGET, changeOrigin: true },
-      '/media': { target: API_TARGET, changeOrigin: true },
+  // Where the dev server proxies /api and /media. Development only — in
+  // production the reverse proxy or VITE_API_BASE_URL takes over.
+  const apiTarget = env.VITE_API_TARGET || 'http://127.0.0.1:8000'
+
+  return {
+    plugins: [react()],
+    server: {
+      host: true, // expose on the LAN so phones can reach the QR upload page
+      port: 5173,
+      proxy: {
+        '/api': { target: apiTarget, changeOrigin: true },
+        '/media': { target: apiTarget, changeOrigin: true },
+      },
     },
-  },
+  }
 })

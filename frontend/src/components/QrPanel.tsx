@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { useLang } from '../context/LangContext'
 import { useSite } from '../context/SiteContext'
-import { api } from '../lib/api'
+import { api, assetUrl } from '../lib/api'
 import { CameraIcon, QrIcon } from './icons'
 import { Ornament } from './ui'
 
@@ -57,7 +57,7 @@ export function QrPanel() {
         <div className="flex justify-center">
           <figure className="rounded-lg bg-white p-5 shadow-2xl sm:p-7">
             <img
-              src="/api/qr?scale=12"
+              src={assetUrl('/api/qr?scale=12')}
               alt={t('qrTitle')}
               width={280}
               height={280}

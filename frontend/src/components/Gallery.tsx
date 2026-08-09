@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { useLang } from '../context/LangContext'
-import { api } from '../lib/api'
+import { api, assetUrl } from '../lib/api'
 import { classNames, timeAgo } from '../lib/format'
 import type { GalleryItem, UploadKind } from '../lib/types'
 import {
@@ -192,7 +192,7 @@ function GalleryTile({
     )
   }
 
-  const preview = item.thumb_url ?? item.file_url ?? ''
+  const preview = assetUrl(item.thumb_url ?? item.file_url)
 
   return (
     <button
@@ -203,7 +203,7 @@ function GalleryTile({
       {item.kind === 'video' ? (
         <>
           <video
-            src={item.file_url ?? undefined}
+            src={assetUrl(item.file_url) || undefined}
             className="h-full w-full object-cover"
             muted
             playsInline
@@ -308,14 +308,14 @@ function Lightbox({
 
         {item.kind === 'photo' && (
           <img
-            src={item.file_url ?? ''}
+            src={assetUrl(item.file_url)}
             alt={item.message ?? ''}
             className="max-h-full max-w-full rounded-md object-contain"
           />
         )}
         {item.kind === 'video' && (
           <video
-            src={item.file_url ?? undefined}
+            src={assetUrl(item.file_url) || undefined}
             className="max-h-full max-w-full rounded-md"
             controls
             autoPlay

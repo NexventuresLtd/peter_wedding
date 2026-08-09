@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import { useLang } from '../context/LangContext'
 import { useSite } from '../context/SiteContext'
+import { assetUrl } from '../lib/api'
 import { daysUntil, formatWeddingDate } from '../lib/format'
 import { CameraIcon, ChurchIcon } from './icons'
 
@@ -11,7 +12,7 @@ export function Hero() {
 
   const content = config?.content
   const copy = content?.[lang]
-  const heroImage = config?.images.hero?.[0]?.file_url
+  const heroImage = assetUrl(config?.images.hero?.[0]?.file_url)
   const overlay = config?.theme.heroOverlay ?? 0.45
 
   const dateLabel = content ? formatWeddingDate(content.weddingDate, lang) : null

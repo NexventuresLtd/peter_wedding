@@ -37,6 +37,7 @@ API on http://127.0.0.1:8000 · interactive docs at http://127.0.0.1:8000/docs
 ```bash
 cd frontend
 npm install
+cp .env.example .env           # optional — the defaults already point at :8000
 npm run dev
 ```
 
@@ -44,6 +45,20 @@ Site on http://127.0.0.1:5173 · admin at http://127.0.0.1:5173/admin
 
 Vite proxies `/api` and `/media` to the backend, so both dev servers behave as
 one origin.
+
+### Where the backend URL is configured
+
+The frontend calls the API with **relative** paths (`/api/…`, `/media/…`), so
+in the normal setup there is no backend URL to configure at all. Two knobs
+exist in `frontend/.env` for when you need them:
+
+| Variable | When | Effect |
+| --- | --- | --- |
+| `VITE_API_TARGET` | Development | Where `npm run dev` proxies `/api` and `/media`. Defaults to `http://127.0.0.1:8000`. Never enters the built bundle. |
+| `VITE_API_BASE_URL` | Production, split origin | Absolute API origin, prefixed onto every request and media URL. Leave **empty** when a reverse proxy serves both from one host. |
+
+`VITE_API_BASE_URL` is baked in at build time — rebuild after changing it, and
+add the frontend's origin to `CORS_ORIGINS` in `backend/.env`.
 
 ---
 
@@ -166,7 +181,9 @@ frontend/src/
 1. `cd frontend && npm run build` → serve `dist/` from any static host or Nginx.
 2. Run the API behind a real server:
    `uvicorn app.main:app --host 0.0.0.0 --port 8000` (or gunicorn + uvicorn workers).
-3. Point `/api` and `/media` at the API from your reverse proxy.
+3. Point `/api` and `/media` at the API from your reverse proxy. Doing this
+   means you can leave `VITE_API_BASE_URL` empty — same origin, no CORS. If the
+   API instead lives on its own host, set `VITE_API_BASE_URL` and rebuild.
 4. In `backend/.env` set a strong `SECRET_KEY`, the real `PUBLIC_SITE_URL`, and
    `CORS_ORIGINS` to the production domain.
 5. Back up `backend/uploads/` — it holds every guest photo and video, and those

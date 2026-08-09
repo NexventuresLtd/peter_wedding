@@ -10,7 +10,7 @@ import {
 } from '../../components/icons'
 import { Badge, EmptyState, ErrorState, Modal, Skeleton, Spinner, useToast } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
-import { api } from '../../lib/api'
+import { api, assetUrl } from '../../lib/api'
 import { classNames, formatBytes, formatDateTime } from '../../lib/format'
 import type { AdminUpload, UploadKind, UploadStats, UploadStatus } from '../../lib/types'
 
@@ -380,7 +380,7 @@ function UploadCard({
         >
           {item.kind === 'photo' && (
             <img
-              src={item.thumb_url ?? item.file_url ?? ''}
+              src={assetUrl(item.thumb_url ?? item.file_url)}
               alt=""
               loading="lazy"
               className="h-full w-full object-cover"
@@ -388,7 +388,7 @@ function UploadCard({
           )}
           {item.kind === 'video' && (
             <video
-              src={item.file_url ?? undefined}
+              src={assetUrl(item.file_url) || undefined}
               className="h-full w-full object-cover"
               muted
               preload="metadata"
@@ -502,14 +502,14 @@ function PreviewModal({
       <div className="bg-black">
         {item.kind === 'photo' && (
           <img
-            src={item.file_url ?? ''}
+            src={assetUrl(item.file_url)}
             alt=""
             className="max-h-[60vh] w-full object-contain"
           />
         )}
         {item.kind === 'video' && (
           <video
-            src={item.file_url ?? undefined}
+            src={assetUrl(item.file_url) || undefined}
             className="max-h-[60vh] w-full"
             controls
             autoPlay

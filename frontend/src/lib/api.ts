@@ -14,6 +14,28 @@ import type {
 
 const TOKEN_KEY = 'pw_admin_token'
 
+/**
+ * Absolute origin of the backend, or '' when it is served from this same
+ * origin (the default — a reverse proxy forwards /api and /media).
+ *
+ * Set VITE_API_BASE_URL only for split-origin deploys. Baked in at build time,
+ * so a change requires a rebuild.
+ */
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+
+/**
+ * Resolve a server-relative path ("/media/…", "/api/qr") against API_BASE.
+ *
+ * Use this for anything the browser fetches directly — <img src>, <video src>,
+ * XHR — because those bypass the api client below. Absolute URLs and data URIs
+ * are passed through untouched.
+ */
+export function assetUrl(path: string | null | undefined): string {
+  if (!path) return ''
+  if (/^(https?:)?\/\//i.test(path) || path.startsWith('data:')) return path
+  return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`
+}
+
 export const tokenStore = {
   get: () => localStorage.getItem(TOKEN_KEY),
   set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
@@ -67,7 +89,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     if (token) headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE}${path}`, {
     method,
     headers,
     signal,
@@ -125,7 +147,7 @@ export const api = {
   login: async (email: string, password: string) => {
     // OAuth2 password flow expects form encoding, not JSON.
     const form = new URLSearchParams({ username: email, password })
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: form,

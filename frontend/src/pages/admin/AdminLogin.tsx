@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 
+import { SiteLogo } from '../../components/SiteLogo'
 import { Ornament, Spinner } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { ApiError } from '../../lib/api'
@@ -28,7 +29,7 @@ export function AdminLogin() {
     <div className="flex min-h-screen items-center justify-center bg-surface-alt/60 px-5 py-16">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <p className="font-script text-4xl text-primary">Peter &amp; Yvette</p>
+          <SiteLogo size="lg" />
           <Ornament className="mt-3" />
           <h1 className="mt-5 text-xl text-primary">Admin sign in</h1>
         </div>

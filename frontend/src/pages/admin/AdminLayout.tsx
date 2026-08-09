@@ -10,6 +10,7 @@ import {
   UsersIcon,
   XIcon,
 } from '../../components/icons'
+import { SiteLogo } from '../../components/SiteLogo'
 import { Badge, Spinner } from '../../components/ui'
 import { useAuth } from '../../context/AuthContext'
 import { classNames } from '../../lib/format'
@@ -68,8 +69,8 @@ export function AdminLayout() {
             >
               {menuOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
             </button>
-            <Link to="/" className="truncate font-script text-2xl text-primary">
-              Peter &amp; Yvette
+            <Link to="/" className="flex min-w-0 items-center">
+              <SiteLogo size="sm" />
             </Link>
           </div>
 

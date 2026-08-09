@@ -2,17 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { useLang } from '../context/LangContext'
-import { useSite } from '../context/SiteContext'
-import { assetUrl } from '../lib/api'
 import { classNames } from '../lib/format'
 import { GlobeIcon, MenuIcon, XIcon } from './icons'
+import { SiteLogo } from './SiteLogo'
 
 /** Sections the nav can highlight while scrolling the home page. */
 const TRACKED_SECTIONS = ['programme', 'gallery-teaser', 'share'] as const
 
 export function Nav() {
   const { t, lang, toggle } = useLang()
-  const { config } = useSite()
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -101,15 +99,6 @@ export function Nav() {
     { to: '/upload', label: t('navShare'), section: 'share' },
   ]
 
-  // Logo precedence: an uploaded image, then custom text, then the couple's
-  // initials so the bar is never empty while settings load.
-  const logoImage = config?.images.logo?.find((image) => image.is_active)
-  const wordmark =
-    config?.content.logoText?.trim() ||
-    (config
-      ? `${config.content.groomName[0] ?? 'P'} & ${config.content.brideName[0] ?? 'Y'}`
-      : 'P & Y')
-
   return (
     <header
       className={classNames(
@@ -121,27 +110,8 @@ export function Nav() {
       )}
     >
       <nav className="container-page flex h-16 items-center justify-between sm:h-20">
-        <Link to="/" className="flex items-center" aria-label={wordmark}>
-          {logoImage ? (
-            <img
-              src={assetUrl(logoImage.file_url)}
-              alt={wordmark}
-              className={classNames(
-                'h-9 w-auto max-w-[190px] object-contain transition-all sm:h-11',
-                // A logo made for a light bar needs lifting off the hero photo.
-                solid ? '' : 'drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]',
-              )}
-            />
-          ) : (
-            <span
-              className={classNames(
-                'font-script text-2xl leading-none transition-colors sm:text-3xl',
-                solid ? 'text-primary' : 'text-hero-title drop-shadow',
-              )}
-            >
-              {wordmark}
-            </span>
-          )}
+        <Link to="/" className="flex items-center" aria-label={t('navHome')}>
+          <SiteLogo variant={solid ? 'ink' : 'light'} />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

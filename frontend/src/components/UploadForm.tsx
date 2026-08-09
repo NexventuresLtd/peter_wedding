@@ -370,7 +370,7 @@ function uploadWithProgress(
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', `${API_BASE}/api/uploads/media`)
+    xhr.open('POST', `${API_BASE}/uploads/media`)
 
     xhr.upload.addEventListener('progress', (event) => {
       if (event.lengthComputable) {

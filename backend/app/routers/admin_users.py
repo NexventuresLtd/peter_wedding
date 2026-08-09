@@ -11,7 +11,7 @@ from ..models import AdminRole, AdminUser
 from ..schemas import AdminUserCreate, AdminUserOut, AdminUserUpdate
 from ..security import hash_password
 
-router = APIRouter(prefix="/api/admin/users", tags=["admin:users"])
+router = APIRouter(prefix="/admin/users", tags=["admin:users"])
 
 
 @router.get("", response_model=list[AdminUserOut])

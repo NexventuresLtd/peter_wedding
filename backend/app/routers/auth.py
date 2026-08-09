@@ -12,7 +12,7 @@ from ..models import AdminUser
 from ..schemas import AdminUserOut, PasswordChange, Token
 from ..security import create_access_token, hash_password, verify_password
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 _BAD_LOGIN = HTTPException(status_code=401, detail="Incorrect email or password.")
 

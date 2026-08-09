@@ -11,7 +11,7 @@ from ..deps import require_admin
 from ..models import AdminUser, AgendaItem, AgendaSection
 from ..schemas import AgendaItemCreate, AgendaItemOut, AgendaItemUpdate
 
-router = APIRouter(prefix="/api/admin/agenda", tags=["admin:agenda"])
+router = APIRouter(prefix="/admin/agenda", tags=["admin:agenda"])
 
 
 @router.get("", response_model=list[AgendaItemOut])

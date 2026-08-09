@@ -19,7 +19,7 @@ from ..schemas import AgendaItemOut, PaginatedUploads, SiteConfig
 from ..serializers import upload_public
 from ..site_config import build_site_config, get_content
 
-router = APIRouter(prefix="/api", tags=["public"])
+router = APIRouter(tags=["public"])
 
 
 @router.get("/site", response_model=SiteConfig)

@@ -26,9 +26,21 @@ class Settings(BaseSettings):
     public_site_url: str = "http://localhost:5173"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Path every endpoint and the media mount live under. Set this to whatever
+    # your reverse proxy forwards to the backend *without stripping* — e.g.
+    # "/api/v1" when the API is published at https://example.com/api/v1/.
+    # The frontend's VITE_API_BASE_URL must end with the same path.
+    api_prefix: str = "/api"
+
     upload_dir: str = "uploads"
     max_image_mb: int = 15
     max_video_mb: int = 200
+
+    @property
+    def normalised_api_prefix(self) -> str:
+        """Leading slash, no trailing slash. "" means mount at the root."""
+        prefix = "/" + self.api_prefix.strip().strip("/")
+        return "" if prefix == "/" else prefix
 
     @property
     def cors_origin_list(self) -> list[str]:

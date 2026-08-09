@@ -18,9 +18,9 @@ from ..schemas import (
     UploadStats,
 )
 from ..serializers import upload_admin
-from ..storage import delete_media, disk_usage_bytes, free_space_bytes
+from ..storage import delete_media, free_space_bytes
 
-router = APIRouter(prefix="/api/admin/uploads", tags=["admin:uploads"])
+router = APIRouter(prefix="/admin/uploads", tags=["admin:uploads"])
 
 
 @router.get("", response_model=PaginatedAdminUploads)
@@ -75,6 +75,11 @@ def upload_stats(
         db.query(Upload.kind, func.count(Upload.id)).group_by(Upload.kind).all()
     )
 
+    # Sum the sizes we already recorded at upload time. The previous version
+    # walked the whole uploads directory and stat()'d every file on each call,
+    # which this endpoint makes on every moderation page load.
+    stored_bytes = db.query(func.coalesce(func.sum(Upload.size_bytes), 0)).scalar() or 0
+
     return UploadStats(
         pending=by_status.get(UploadStatus.pending, 0),
         approved=by_status.get(UploadStatus.approved, 0),
@@ -83,7 +88,7 @@ def upload_stats(
         videos=by_kind.get(UploadKind.video, 0),
         texts=by_kind.get(UploadKind.text, 0),
         total=sum(by_status.values()),
-        storage_used_bytes=disk_usage_bytes(),
+        storage_used_bytes=int(stored_bytes),
         storage_free_bytes=free_space_bytes(),
     )
 

@@ -13,7 +13,7 @@ from ..serializers import site_image
 from ..site_config import build_site_config, grouped_images, reset_theme, save_content, save_theme
 from ..storage import delete_media, save_media
 
-router = APIRouter(prefix="/api/admin/site", tags=["admin:site"])
+router = APIRouter(prefix="/admin/site", tags=["admin:site"])
 
 ALLOWED_SLOTS = {"hero", "couple", "gallery", "story", "invitation"}
 

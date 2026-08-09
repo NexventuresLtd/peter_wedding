@@ -171,11 +171,5 @@ def ensure_upload_dirs() -> None:
         (settings.upload_path / bucket).mkdir(parents=True, exist_ok=True)
 
 
-def disk_usage_bytes() -> int:
-    if not settings.upload_path.exists():
-        return 0
-    return sum(f.stat().st_size for f in settings.upload_path.rglob("*") if f.is_file())
-
-
 def free_space_bytes() -> int:
     return shutil.disk_usage(settings.upload_path).free

@@ -57,7 +57,7 @@ export function QrPanel() {
         <div className="flex justify-center">
           <figure className="rounded-lg bg-white p-5 shadow-2xl sm:p-7">
             <img
-              src={assetUrl('/api/qr?scale=12')}
+              src={assetUrl('/qr?scale=12')}
               alt={t('qrTitle')}
               width={280}
               height={280}

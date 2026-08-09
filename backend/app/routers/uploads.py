@@ -12,7 +12,7 @@ from ..serializers import upload_public
 from ..site_config import get_content
 from ..storage import delete_media, save_media
 
-router = APIRouter(prefix="/api/uploads", tags=["uploads"])
+router = APIRouter(prefix="/uploads", tags=["uploads"])
 
 _CLOSED = HTTPException(
     status_code=423,

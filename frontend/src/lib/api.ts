@@ -15,20 +15,25 @@ import type {
 const TOKEN_KEY = 'pw_admin_token'
 
 /**
- * Absolute origin of the backend, or '' when it is served from this same
- * origin (the default — a reverse proxy forwards /api and /media).
+ * Everything before an endpoint path — including the API's path prefix.
  *
- * Set VITE_API_BASE_URL only for split-origin deploys. Baked in at build time,
- * so a change requires a rebuild.
+ *   dev / same-origin proxy : "/api"                (the default)
+ *   published under a path  : "/api/v1"
+ *   API on its own host     : "https://api.example.com/api/v1"
+ *
+ * Must match the backend's API_PREFIX. Baked in at build time by Vite, so
+ * changing it requires `npm run build` again — editing .env on a deployed
+ * server does nothing on its own.
  */
-export const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
 
 /**
- * Resolve a server-relative path ("/media/…", "/api/qr") against API_BASE.
+ * Resolve an API-relative path ("/media/…", "/qr") against API_BASE.
  *
  * Use this for anything the browser fetches directly — <img src>, <video src>,
- * XHR — because those bypass the api client below. Absolute URLs and data URIs
- * are passed through untouched.
+ * XHR — because those bypass the api client below. Media URLs arrive from the
+ * API as "/media/…" and would otherwise resolve against the frontend's own
+ * origin. Absolute URLs and data URIs pass through untouched.
  */
 export function assetUrl(path: string | null | undefined): string {
   if (!path) return ''
@@ -122,32 +127,32 @@ const query = (params: Record<string, string | number | undefined | null>) => {
 // ------------------------------------------------------------------ public API
 
 export const api = {
-  site: () => request<SiteConfig>('/api/site'),
-  agenda: () => request<AgendaItem[]>('/api/agenda'),
-  agendaSections: () => request<SectionTitles>('/api/agenda/sections'),
-  galleryStats: () => request<GalleryStats>('/api/gallery/stats'),
+  site: () => request<SiteConfig>('/site'),
+  agenda: () => request<AgendaItem[]>('/agenda'),
+  agendaSections: () => request<SectionTitles>('/agenda/sections'),
+  galleryStats: () => request<GalleryStats>('/gallery/stats'),
   uploadStatus: () =>
-    request<{ open: boolean; galleryPublic: boolean }>('/api/uploads/status'),
-  qrTarget: () => request<{ url: string }>('/api/qr/target'),
+    request<{ open: boolean; galleryPublic: boolean }>('/uploads/status'),
+  qrTarget: () => request<{ url: string }>('/qr/target'),
 
   gallery: (params: { kind?: string; page?: number; per_page?: number } = {}) =>
-    request<Paginated<GalleryItem>>(`/api/gallery${query(params)}`),
+    request<Paginated<GalleryItem>>(`/gallery${query(params)}`),
 
   uploadText: (payload: {
     message: string
     phone_number: string
     uploader_name?: string
-  }) => request<GalleryItem>('/api/uploads/text', { method: 'POST', body: payload }),
+  }) => request<GalleryItem>('/uploads/text', { method: 'POST', body: payload }),
 
   uploadMedia: (form: FormData) =>
-    request<GalleryItem>('/api/uploads/media', { method: 'POST', body: form }),
+    request<GalleryItem>('/uploads/media', { method: 'POST', body: form }),
 
   // ----------------------------------------------------------------- admin API
 
   login: async (email: string, password: string) => {
     // OAuth2 password flow expects form encoding, not JSON.
     const form = new URLSearchParams({ username: email, password })
-    const response = await fetch(`${API_BASE}/api/auth/login`, {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: form,
@@ -158,10 +163,10 @@ export const api = {
     return data
   },
 
-  me: () => request<AdminUser>('/api/auth/me', { auth: true }),
+  me: () => request<AdminUser>('/auth/me', { auth: true }),
 
   changePassword: (current_password: string, new_password: string) =>
-    request<void>('/api/auth/change-password', {
+    request<void>('/auth/change-password', {
       method: 'POST',
       auth: true,
       body: { current_password, new_password },
@@ -175,94 +180,94 @@ export const api = {
       page?: number
       per_page?: number
     } = {},
-  ) => request<Paginated<AdminUpload>>(`/api/admin/uploads${query(params)}`, { auth: true }),
+  ) => request<Paginated<AdminUpload>>(`/admin/uploads${query(params)}`, { auth: true }),
 
-  adminStats: () => request<UploadStats>('/api/admin/uploads/stats', { auth: true }),
+  adminStats: () => request<UploadStats>('/admin/uploads/stats', { auth: true }),
 
   reviewUpload: (id: number, status: UploadStatus, review_note?: string) =>
-    request<AdminUpload>(`/api/admin/uploads/${id}`, {
+    request<AdminUpload>(`/admin/uploads/${id}`, {
       method: 'PATCH',
       auth: true,
       body: { status, review_note: review_note ?? null },
     }),
 
   bulkReview: (ids: number[], status: UploadStatus) =>
-    request<{ updated: number }>('/api/admin/uploads/bulk', {
+    request<{ updated: number }>('/admin/uploads/bulk', {
       method: 'POST',
       auth: true,
       body: { ids, status },
     }),
 
   deleteUpload: (id: number) =>
-    request<void>(`/api/admin/uploads/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/uploads/${id}`, { method: 'DELETE', auth: true }),
 
-  adminSite: () => request<SiteConfig>('/api/admin/site', { auth: true }),
+  adminSite: () => request<SiteConfig>('/admin/site', { auth: true }),
 
   saveSite: (payload: { theme?: unknown; content?: unknown }) =>
-    request<SiteConfig>('/api/admin/site', { method: 'PUT', auth: true, body: payload }),
+    request<SiteConfig>('/admin/site', { method: 'PUT', auth: true, body: payload }),
 
   resetTheme: () =>
-    request<SiteConfig>('/api/admin/site/theme/reset', { method: 'POST', auth: true }),
+    request<SiteConfig>('/admin/site/theme/reset', { method: 'POST', auth: true }),
 
-  adminImages: () => request<SiteImage[]>('/api/admin/site/images', { auth: true }),
+  adminImages: () => request<SiteImage[]>('/admin/site/images', { auth: true }),
 
   addImage: (form: FormData) =>
-    request<SiteImage>('/api/admin/site/images', { method: 'POST', auth: true, body: form }),
+    request<SiteImage>('/admin/site/images', { method: 'POST', auth: true, body: form }),
 
   updateImage: (id: number, payload: Partial<SiteImage>) =>
-    request<SiteImage>(`/api/admin/site/images/${id}`, {
+    request<SiteImage>(`/admin/site/images/${id}`, {
       method: 'PATCH',
       auth: true,
       body: payload,
     }),
 
   deleteImage: (id: number) =>
-    request<void>(`/api/admin/site/images/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/site/images/${id}`, { method: 'DELETE', auth: true }),
 
-  adminAgenda: () => request<AgendaItem[]>('/api/admin/agenda', { auth: true }),
+  adminAgenda: () => request<AgendaItem[]>('/admin/agenda', { auth: true }),
 
   createAgendaItem: (payload: Partial<AgendaItem>) =>
-    request<AgendaItem>('/api/admin/agenda', { method: 'POST', auth: true, body: payload }),
+    request<AgendaItem>('/admin/agenda', { method: 'POST', auth: true, body: payload }),
 
   updateAgendaItem: (id: number, payload: Partial<AgendaItem>) =>
-    request<AgendaItem>(`/api/admin/agenda/${id}`, {
+    request<AgendaItem>(`/admin/agenda/${id}`, {
       method: 'PATCH',
       auth: true,
       body: payload,
     }),
 
   deleteAgendaItem: (id: number) =>
-    request<void>(`/api/admin/agenda/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/agenda/${id}`, { method: 'DELETE', auth: true }),
 
   reorderAgenda: (ordered_ids: number[]) =>
-    request<AgendaItem[]>('/api/admin/agenda/reorder', {
+    request<AgendaItem[]>('/admin/agenda/reorder', {
       method: 'POST',
       auth: true,
       body: { ordered_ids },
     }),
 
   restoreAgenda: () =>
-    request<AgendaItem[]>('/api/admin/agenda/restore-defaults', {
+    request<AgendaItem[]>('/admin/agenda/restore-defaults', {
       method: 'POST',
       auth: true,
     }),
 
-  adminUsers: () => request<AdminUser[]>('/api/admin/users', { auth: true }),
+  adminUsers: () => request<AdminUser[]>('/admin/users', { auth: true }),
 
   createUser: (payload: {
     email: string
     full_name: string
     password: string
     role: string
-  }) => request<AdminUser>('/api/admin/users', { method: 'POST', auth: true, body: payload }),
+  }) => request<AdminUser>('/admin/users', { method: 'POST', auth: true, body: payload }),
 
   updateUser: (id: number, payload: Record<string, unknown>) =>
-    request<AdminUser>(`/api/admin/users/${id}`, {
+    request<AdminUser>(`/admin/users/${id}`, {
       method: 'PATCH',
       auth: true,
       body: payload,
     }),
 
   deleteUser: (id: number) =>
-    request<void>(`/api/admin/users/${id}`, { method: 'DELETE', auth: true }),
+    request<void>(`/admin/users/${id}`, { method: 'DELETE', auth: true }),
 }

@@ -48,17 +48,34 @@ one origin.
 
 ### Where the backend URL is configured
 
-The frontend calls the API with **relative** paths (`/api/…`, `/media/…`), so
-in the normal setup there is no backend URL to configure at all. Two knobs
-exist in `frontend/.env` for when you need them:
+Two variables, one on each side, and **they must agree**:
 
-| Variable | When | Effect |
+| Side | Variable | Meaning |
 | --- | --- | --- |
-| `VITE_API_TARGET` | Development | Where `npm run dev` proxies `/api` and `/media`. Defaults to `http://127.0.0.1:8000`. Never enters the built bundle. |
-| `VITE_API_BASE_URL` | Production, split origin | Absolute API origin, prefixed onto every request and media URL. Leave **empty** when a reverse proxy serves both from one host. |
+| `backend/.env` | `API_PREFIX` | Path every endpoint *and* the media mount live under. Default `/api`. |
+| `frontend/.env` | `VITE_API_BASE_URL` | What the browser puts in front of every request. Default `/api`. |
+| `frontend/.env` | `VITE_API_TARGET` | Dev only — where `npm run dev` proxies. Never enters the build. |
 
-`VITE_API_BASE_URL` is baked in at build time — rebuild after changing it, and
-add the frontend's origin to `CORS_ORIGINS` in `backend/.env`.
+Set both to the same path and everything follows: endpoints, media URLs, the
+QR image and the OpenAPI docs all relocate together.
+
+```
+API_PREFIX=/api/v1          # backend/.env
+VITE_API_BASE_URL=/api/v1   # frontend/.env
+```
+
+If the API is on a *different host*, give `VITE_API_BASE_URL` the full origin
+including the path (`https://api.example.com/api/v1`) and add the site's origin
+to `CORS_ORIGINS` in `backend/.env`.
+
+> **`VITE_API_BASE_URL` is baked into the bundle at build time.** Editing
+> `frontend/.env` on a deployed server does nothing on its own — you must run
+> `npm run build` again and redeploy `dist/`. If your requests never reach the
+> backend and nothing appears in its log, this is almost always why.
+
+Do **not** use FastAPI's `root_path` for this. It only affects generated
+documentation URLs; it does not move the routes, so the app would still serve
+`/api/site` while your proxy asks for `/api/v1/site`.
 
 ---
 
@@ -178,20 +195,65 @@ frontend/src/
 
 ## Deploying
 
-1. `cd frontend && npm run build` → serve `dist/` from any static host or Nginx.
-2. Run the API behind a real server:
-   `uvicorn app.main:app --host 0.0.0.0 --port 8000` (or gunicorn + uvicorn workers).
-3. Point `/api` and `/media` at the API from your reverse proxy. Doing this
-   means you can leave `VITE_API_BASE_URL` empty — same origin, no CORS. If the
-   API instead lives on its own host, set `VITE_API_BASE_URL` and rebuild.
-4. In `backend/.env` set a strong `SECRET_KEY`, the real `PUBLIC_SITE_URL`, and
-   `CORS_ORIGINS` to the production domain.
+1. Set `API_PREFIX` in `backend/.env` and the matching `VITE_API_BASE_URL` in
+   `frontend/.env`.
+2. `cd frontend && npm run build` → deploy `dist/`.
+3. Run the API: `uvicorn app.main:app --host 127.0.0.1 --port 8000`
+   (or gunicorn with uvicorn workers, behind systemd).
+4. In `backend/.env` set a strong `SECRET_KEY`, the real `PUBLIC_SITE_URL`
+   (the QR code encodes it), and `CORS_ORIGINS`.
 5. Back up `backend/uploads/` — it holds every guest photo and video, and those
    are irreplaceable.
 
+### Nginx
+
+This example publishes the site at `https://peterandyvette.com/` and the API at
+`https://peterandyvette.com/api/v1/`, matching `API_PREFIX=/api/v1`.
+
+```nginx
+server {
+    server_name peterandyvette.com;
+    root /var/www/peterandyvette/dist;
+
+    # Serve media straight off disk. Without this block every photo and video
+    # is streamed through Python, which is slow and ties up a worker for the
+    # length of the download.
+    location /api/v1/media/ {
+        alias /srv/peterwedding/backend/uploads/;
+        try_files $uri =404;
+        access_log off;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # The API. `proxy_pass` has NO trailing path, which is what preserves the
+    # /api/v1 prefix — the backend expects to receive it, not to have it
+    # stripped. Adding a trailing slash here is the usual cause of 404s.
+    location /api/v1/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Must be >= MAX_VIDEO_MB or large uploads fail at the proxy, before
+        # they ever reach the app.
+        client_max_body_size 210m;
+        proxy_request_buffering off;
+    }
+
+    # SPA fallback — must come last so it does not swallow the routes above.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+`X-Forwarded-For` matters: it is what the moderation queue records as the
+uploader's IP. Without it every upload appears to come from `127.0.0.1`.
+
 Upload limits default to 15 MB per photo and 200 MB per video
-(`MAX_IMAGE_MB` / `MAX_VIDEO_MB`). If you put Nginx in front, raise
-`client_max_body_size` to match or large videos will fail at the proxy.
+(`MAX_IMAGE_MB` / `MAX_VIDEO_MB` in `backend/.env`).
 
 ---
 

@@ -27,6 +27,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
+    root_path="/api/v1",#for deployment behind a reverse proxy, e.g. nginx
     title="Peter & Yvette — Wedding API",
     description=(
         "Public wedding site: bilingual agenda, guest photo/video/message "
